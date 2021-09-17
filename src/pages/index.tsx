@@ -8,7 +8,20 @@ import { api } from '../services/api';
 import { Loading } from '../components/Loading';
 import { Error } from '../components/Error';
 
-async function fetchImages({ pageParam = 0 }): Promise<any> {
+interface Image {
+  title: string;
+  description: string;
+  url: string;
+  ts: number;
+  id: string;
+}
+
+type GetImagesResponse = {
+  after: string;
+  data: Image[];
+};
+
+async function fetchImages({ pageParam = 0 }): Promise<GetImagesResponse> {
   const response = await api.get(`/api/images?after=${pageParam}`);
 
   return response.data;
