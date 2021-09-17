@@ -21,8 +21,12 @@ type GetImagesResponse = {
   data: Image[];
 };
 
-async function fetchImages({ pageParam = 0 }): Promise<GetImagesResponse> {
-  const response = await api.get(`/api/images?after=${pageParam}`);
+async function fetchImages({ pageParam = null }): Promise<GetImagesResponse> {
+  const response = await api.get('/api/images', {
+    params: {
+      after: pageParam,
+    },
+  });
 
   return response.data;
 }
@@ -36,9 +40,7 @@ export default function Home(): JSX.Element {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery('images', fetchImages, {
-    getNextPageParam: lastPage => {
-      return lastPage.after;
-    },
+    getNextPageParam: lastPage => lastPage?.after || null,
   });
 
   const formattedData = useMemo(() => {
@@ -51,7 +53,6 @@ export default function Home(): JSX.Element {
   return (
     <>
       <Header />
-
       <Box maxW={1120} px={20} mx="auto" my={20}>
         <CardList cards={formattedData} />
         {hasNextPage && (
